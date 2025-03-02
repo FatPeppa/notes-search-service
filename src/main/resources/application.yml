@@ -1,0 +1,8 @@
+server:
+  port: ${SERVER-PORT:6212}
+  http2:
+    enabled: true
+
+spring:
+  application:
+    name: notes-search-service
