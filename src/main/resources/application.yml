@@ -1,8 +1,47 @@
 server:
-  port: ${SERVER-PORT:6212}
+  port: ${WEB-SERVER-PORT:6212}
   http2:
-    enabled: true
+    enabled: false
+
+grpc:
+  server:
+    port: ${GRPC-SERVER-PORT:6213}
+    max-inbound-message-size: ${MAX-INBOUND-MESSAGE-SIZE:2MB}
 
 spring:
   application:
     name: notes-search-service
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: ${HIBERNATE-DDL-HANDLING:none} #Генерация сущностей на основе классов. Рекомендуется использовать значения none (если нет необходимости в изменении схемы) и create-drop (для сброса схемы после запуска; используется как первый шаг для автоматических изменений схемы)
+    open-in-view: false
+  datasource:
+    url: jdbc:postgresql://${DB-SERVER-HOST:localhost}:${DB-SERVER-PORT:6200}/${DB-NAME:notes_search_db} #URL БД сервиса
+    type: com.zaxxer.hikari.HikariDataSource
+    hikari:
+      driver-class-name: org.postgresql.Driver
+      username: ${DB-USER:root} #Имя пользователя к УЗ сервиса в БД
+      password: ${DB-PASSWORD:123} #Пароль к УЗ сервиса в БД
+      maximum-pool-size: ${DB-MAXIMUM-POOL-SIZE:10} #Максимальное количество соединений в пуле HikariCP
+      transaction-isolation: ${DB-TRANSACTION-ISOLATION:TRANSACTION_READ_COMMITTED} #Уровень изоляции транзакций БД
+      auto-commit: ${DB-AUTO-COMMIT:true} #Режим работы с подключением к БД, в котором каждая операция выполняется в отдельной транзакции
+      connection-timeout: ${DB-CONNECTION-TIMEOUT:500000} #Таймаут соединений HikariCP в миллисекундах
+      idle-timeout: ${DB-CONNECTION-IDLE-TIMEOUT:300000} #Время жизни неактивных соединений в пуле HikariCP в миллисекундах
+      max-lifetime: ${DB-CONNECTION-MAX-LIFETIME:900000} #Время жизни соединений в пуле HikariCP в миллисекундах
+      minimum-idle: ${DB-POOL-MINIMUM-IDLE-CONNECTIONS:2} #Минимальное количество свободных подключений, которые пул HikariCP будет всегда поддерживать
+      schema: schema
+    continue-on-error: false
+    initialization-mode: always
+  sql:
+    init:
+      mode: ${DB-INIT-MODE:never} # Режим автоматического запуска DDL-скрипта БД. Возможные значения: always, never, embedded
+      continue-on-error: false
+      encoding: UTF-8
+
+logging:
+  level:
+    root: ${DEFAULT-LOGGING-LEVEL:INFO} #Уровень логирования сервиса. Возможные значения: ERROR / WARN / INFO / DEBUG / TRACE
+
+debug:
+  ${DEBUG:false} #Переключатель режима отладки сервиса. Возможные значения: true (режим отладки) / false (обычный режим)

@@ -1,31 +1,134 @@
 syntax = "proto3";
 
+import "google/protobuf/wrappers.proto";
+
 package notes;
 
 option java_package = "org.shyhigh.grpc.notes";
 option java_multiple_files = true;
 
-message noteBodyCreateRequest {
-
+enum ResponseResultCode {
+  CREATE_SUCCESS = 0;
+  CREATE_FAILURE_UNREADABLE_MESSAGE = 1;
+  CREATE_FAILURE_DATA_ALREADY_EXISTS = 2;
+  CREATE_FAILURE_INCORRECT_FIELDS_FILLED_MESSAGE = 3;
+  UPDATE_SUCCESS = 4;
+  UPDATE_FAILURE_UNREADABLE_MESSAGE = 5;
+  UPDATE_FAILURE_DATA_NOT_EXIST = 6;
+  UPDATE_FAILURE_INCORRECT_FIELDS_FILLED_MESSAGE = 7;
+  UPDATE_FAILURE_INCORRECT_USER = 8;
+  DELETE_SUCCESS = 9;
+  DELETE_FAILURE_UNREADABLE_MESSAGE = 10;
+  DELETE_FAILURE_DATA_NOT_EXIST = 11;
+  DELETE_FAILURE_INCORRECT_FIELDS_FILLED_MESSAGE = 12;
+  SEARCH_SUCCESS = 13;
+  SEARCH_UNREADABLE_MESSAGE = 14;
+  SEARCH_NOTES_NOT_FOUND = 15;
+  UNEXPECTED_ERROR = 16;
 }
 
-message noteBodyCreateResponse {
-
+enum NoteDataUpdateType {
+  NOTE_NAME_AND_CATEGORY_UPDATE = 0;
+  CATEGORY_NAME_UPDATE = 1;
+  NOTE_TAG_NAME_UPDATE = 2;
+  NOTE_TAGS_UPDATE = 3;
+  NOTE_IMAGES_UPDATE = 4;
+  NOTE_CONTENT_UPDATE = 5;
 }
 
-message noteBodyUpdateRequest {
-
+message NoteBody {
+  int64 id = 1;
+  int64 user_id = 2;
+  google.protobuf.StringValue name = 3;
+  NoteCategory category = 4;
 }
 
-message noteBodyUpdateResponse {
-
+message NoteTag {
+  int64 id = 1;
+  string name = 2;
 }
 
-message noteDeleteRequest {
-
+message NoteCategory {
+  int64 id = 1;
+  string name = 2;
 }
 
-message noteDeleteResponse {
-
+message NoteCreateRequest {
+  NoteBody note_body = 1;
+  string created_date = 2;
+  string last_change_date = 3;
 }
 
+message NoteUpdateRequest {
+  NoteDataUpdateType note_data_update_type = 1;
+  NoteBody note_body = 2;
+  repeated NoteTag note_tags = 3;
+  google.protobuf.StringValue text_extraction = 4;
+  google.protobuf.StringValue media_id = 5;
+  repeated google.protobuf.StringValue image_ids = 6;
+  google.protobuf.StringValue created_date = 7;
+  string last_change_date = 8;
+  google.protobuf.BytesValue content = 9;
+  google.protobuf.Int64Value tag_id = 10;
+  google.protobuf.StringValue tag_name = 11;
+}
+
+message NoteDeleteRequest {
+  int64 id = 1;
+}
+
+message DataModifyingResponse {
+  ResponseResultCode response_result_code = 1;
+}
+
+message Note {
+  int64 id = 1;
+  int64 user_id = 2;
+  string name = 3;
+  NoteCategory category = 4;
+  repeated NoteTag note_tags = 5;
+  google.protobuf.StringValue text_extraction = 6;
+  google.protobuf.StringValue media_id = 7;
+  repeated google.protobuf.StringValue image_ids = 8;
+  string created_date = 9;
+  string last_change_date = 10;
+  google.protobuf.BytesValue content = 11;
+}
+
+enum NoteSearchResponseDetailType {
+  FULL = 0;
+  WITHOUT_CONTENT = 1;
+  WITHOUT_TEXT_EXTRACTION = 2;
+  WITHOUT_TAGS = 3;
+  WITHOUT_MEDIA_IDS = 4;
+  WITHOUT_TAGS_AND_MEDIA_IDS = 5;
+}
+
+enum SearchType {
+  NON_NORMALIZED = 0;
+  NON_NORMALIZED_FULL_TEXT = 1;
+  NORMALIZED = 2;
+  NORMALIZED_FULL_TEXT = 3;
+}
+
+message NoteSearchRequest {
+  SearchType search_type = 1;
+  google.protobuf.StringValue query = 2;
+  int64 user_id = 3;
+  NoteSearchResponseDetailType detail_type = 4;
+}
+
+message NoteSearchResponse {
+  ResponseResultCode response_result_code = 1;
+  repeated Note notes = 2;
+}
+
+service NoteDataModifyingService {
+  rpc createNote(NoteCreateRequest) returns (DataModifyingResponse);
+  rpc updateNote(NoteUpdateRequest) returns (DataModifyingResponse);
+  rpc deleteNote(NoteDeleteRequest) returns (DataModifyingResponse);
+}
+
+service NoteSearchService {
+  rpc searchNotes(NoteSearchRequest) returns (NoteSearchResponse);
+}
