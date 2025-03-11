@@ -83,8 +83,8 @@ public interface NoteRepository extends JpaRepository<Note, Long> {
     @Transactional
     @Modifying(clearAutomatically=true, flushAutomatically=true)
     @Query(value = "UPDATE public.notes " +
-            "SET text_extraction=?2,media_id=?3,note_content=?4" +
-            "tsvector_content=to_tsvector('public.ru',?3),last_change_date=?4 " +
+            "SET text_extraction=?2,media_id=?3,note_content=?4," +
+            "tsvector_content=to_tsvector('public.ru',?4),last_change_date=?5 " +
             "WHERE id = ?1",
             nativeQuery = true
     ) void updateNoteTextExtractionAndMediaIdAndNoteContentAndLastChangeDate(

@@ -202,7 +202,7 @@ BEGIN
                    upper(NEW.note_content),
                    to_tsvector(''public.ru'',upper(NEW.name)),
                    to_tsvector(''public.ru'',upper(coalesce(NEW.note_content, ''''))),
-                   to_tsvector(''public.ru'',upper(NEW.name)||'' ''||coalesce(upper(NEW.note_content),''''))
+                   to_tsvector(''public.ru'',upper(NEW.name)||'' ''||upper(coalesce(new.note_content, '''')))
                );
     RETURN NEW;
 END;'
@@ -220,7 +220,7 @@ BEGIN
         normalized_note_content = upper(new.note_content),
         tsvector_name = to_tsvector(''public.ru'',upper(new.name)),
         tsvector_content = to_tsvector(''public.ru'',upper(coalesce(new.note_content, ''''))),
-        tsvector_name_content = to_tsvector(''public.ru'',upper(new.name)||'' ''||coalesce(upper(new.note_content),''''))
+        tsvector_name_content = to_tsvector(''public.ru'',upper(new.name)||'' ''||upper(coalesce(new.note_content,'''')))
     WHERE note_id = new.id;
 
     RETURN NULL;

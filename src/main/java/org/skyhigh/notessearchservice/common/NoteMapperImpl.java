@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.shyhigh.grpc.notes.*;
 import org.skyhigh.notessearchservice.model.mapped.*;
-import org.skyhigh.notessearchservice.repository.NoteRepository;
 import org.skyhigh.notessearchservice.validation.exception.GrpcMessagesMappingException;
 import org.springframework.stereotype.Component;
 
@@ -20,7 +19,6 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Log4j2
 public class NoteMapperImpl implements NoteMapper {
-    private final NoteRepository noteRepository;
 
     @Override
     public NoteBodyObject map(NoteBody noteBody) throws DateTimeParseException {
@@ -349,7 +347,7 @@ public class NoteMapperImpl implements NoteMapper {
             resultBuilder.setTextExtraction(StringValue.of(noteObject
                     .getTextExtraction()));
         if (noteObject.getMediaId() != null)
-            resultBuilder.setTextExtraction(StringValue.of(noteObject
+            resultBuilder.setMediaId(StringValue.of(noteObject
                     .getMediaId().toString()));
         if (noteObject.getImageIds() != null
                 && !noteObject.getImageIds().isEmpty())
@@ -400,7 +398,7 @@ public class NoteMapperImpl implements NoteMapper {
             resultBuilder.setTextExtraction(StringValue.of(noteUpdateRequestObject
                     .getTextExtraction()));
         if (noteUpdateRequestObject.getMediaId() != null)
-            resultBuilder.setTextExtraction(StringValue.of(noteUpdateRequestObject
+            resultBuilder.setMediaId(StringValue.of(noteUpdateRequestObject
                     .getMediaId().toString()));
         if (noteUpdateRequestObject.getImageIds() != null
                 && !noteUpdateRequestObject.getImageIds().isEmpty())

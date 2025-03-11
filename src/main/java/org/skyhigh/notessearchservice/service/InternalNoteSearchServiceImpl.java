@@ -31,13 +31,13 @@ public class InternalNoteSearchServiceImpl implements InternalNoteSearchService 
             case NORMALIZED -> {
                 notes = noteRepository.findNoteByPartEqualityNormalized(
                         noteSearchRequestObject.getUserId(),
-                        noteSearchRequestObject.getQuery()
+                        "%" + noteSearchRequestObject.getQuery() + "%"
                 );
             }
             case NON_NORMALIZED -> {
                 notes = noteRepository.findNoteByPartEqualityNonNormalized(
                         noteSearchRequestObject.getUserId(),
-                        noteSearchRequestObject.getQuery()
+                        "%" + noteSearchRequestObject.getQuery() + "%"
                 );
             }
             case NORMALIZED_FULL_TEXT -> {

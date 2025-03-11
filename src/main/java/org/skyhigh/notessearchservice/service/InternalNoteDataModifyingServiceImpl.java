@@ -72,8 +72,8 @@ public class InternalNoteDataModifyingServiceImpl implements InternalNoteDataMod
                     noteRepository.updateNoteNameAndCategoryAndLastChangeDate(
                             noteBody.getNoteId(),
                             noteBody.getName(),
-                            noteBody.getNoteCategoryObject().getCategoryId(),
-                            noteBody.getNoteCategoryObject().getCategoryName(),
+                            noteBody.getNoteCategoryObject() == null ? null : noteBody.getNoteCategoryObject().getCategoryId(),
+                            noteBody.getNoteCategoryObject() == null ? null : noteBody.getNoteCategoryObject().getCategoryName(),
                             noteUpdateRequestObject.getLastChangeDate()
                     );
                 }
@@ -92,15 +92,17 @@ public class InternalNoteDataModifyingServiceImpl implements InternalNoteDataMod
                 }
                 case NOTE_TAGS_UPDATE -> {
                     tagRepository.deleteByNoteId(noteBody.getNoteId());
-                    noteUpdateRequestObject.getNoteTagObjects().forEach(x -> tagRepository
-                            .save(new Tag(null, noteBody.getNoteId(), x.getTagId(), x.getTagName())));
+                    if (noteUpdateRequestObject.getNoteTagObjects() != null)
+                        noteUpdateRequestObject.getNoteTagObjects().forEach(x -> tagRepository
+                                .save(new Tag(null, noteBody.getNoteId(), x.getTagId(), x.getTagName())));
                     noteRepository.updateNoteLastChangeDate(noteBody.getNoteId(), noteUpdateRequestObject
                             .getLastChangeDate());
                 }
                 case NOTE_IMAGES_UPDATE -> {
                     mediaIdRepository.deleteByNoteId(noteBody.getNoteId());
-                    noteUpdateRequestObject.getImageIds().forEach(x -> mediaIdRepository
-                            .save(new MediaId(null, noteBody.getNoteId(), x)));
+                    if (noteUpdateRequestObject.getImageIds() != null)
+                        noteUpdateRequestObject.getImageIds().forEach(x -> mediaIdRepository
+                                .save(new MediaId(null, noteBody.getNoteId(), x)));
                     noteRepository.updateNoteLastChangeDate(noteBody.getNoteId(), noteUpdateRequestObject
                             .getLastChangeDate());
                 }

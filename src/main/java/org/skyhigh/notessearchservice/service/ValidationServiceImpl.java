@@ -62,28 +62,28 @@ public class ValidationServiceImpl implements ValidationService {
                 if (noteUpdateRequestObject.getNoteBodyObject() == null
                         || noteUpdateRequestObject.getNoteBodyObject().getName() == null
                         || noteUpdateRequestObject.getNoteBodyObject().getName().isBlank()
-                ) throw new ValidationException(ResponseResultCode.CREATE_FAILURE_INCORRECT_FIELDS_FILLED_MESSAGE);
+                ) throw new ValidationException(ResponseResultCode.UPDATE_FAILURE_INCORRECT_FIELDS_FILLED_MESSAGE);
                 if (noteUpdateRequestObject.getNoteBodyObject().getNoteCategoryObject() != null
                         && (noteUpdateRequestObject.getNoteBodyObject().getNoteCategoryObject().getCategoryId() == null
                         || noteUpdateRequestObject.getNoteBodyObject().getNoteCategoryObject().getCategoryName() == null
                         || noteUpdateRequestObject.getNoteBodyObject().getNoteCategoryObject().getCategoryName().isBlank()))
-                    throw new ValidationException(ResponseResultCode.CREATE_FAILURE_INCORRECT_FIELDS_FILLED_MESSAGE);
+                    throw new ValidationException(ResponseResultCode.UPDATE_FAILURE_INCORRECT_FIELDS_FILLED_MESSAGE);
             }
             case CATEGORY_NAME_UPDATE -> {
                 if (noteUpdateRequestObject.getNoteBodyObject() == null
                         || noteUpdateRequestObject.getNoteBodyObject().getNoteCategoryObject().getCategoryName() == null
                         || noteUpdateRequestObject.getNoteBodyObject().getNoteCategoryObject().getCategoryName().isBlank()
-                ) throw new ValidationException(ResponseResultCode.CREATE_FAILURE_INCORRECT_FIELDS_FILLED_MESSAGE);
+                ) throw new ValidationException(ResponseResultCode.UPDATE_FAILURE_INCORRECT_FIELDS_FILLED_MESSAGE);
             }
             case NOTE_TAGS_UPDATE -> {
                 if (noteUpdateRequestObject.getNoteBodyObject() == null
-                        || noteUpdateRequestObject.getNoteTagObjects() == null
-                ) throw new ValidationException(ResponseResultCode.CREATE_FAILURE_INCORRECT_FIELDS_FILLED_MESSAGE);
+                        //|| noteUpdateRequestObject.getNoteTagObjects() == null
+                ) throw new ValidationException(ResponseResultCode.UPDATE_FAILURE_INCORRECT_FIELDS_FILLED_MESSAGE);
             }
             case NOTE_IMAGES_UPDATE -> {
                 if (noteUpdateRequestObject.getNoteBodyObject() == null
-                        || noteUpdateRequestObject.getImageIds() == null
-                ) throw new ValidationException(ResponseResultCode.CREATE_FAILURE_INCORRECT_FIELDS_FILLED_MESSAGE);
+                        //|| noteUpdateRequestObject.getImageIds() == null
+                ) throw new ValidationException(ResponseResultCode.UPDATE_FAILURE_INCORRECT_FIELDS_FILLED_MESSAGE);
             }
             case NOTE_TAG_NAME_UPDATE -> {
                 if (noteUpdateRequestObject.getNoteBodyObject().getNoteId() == null
@@ -94,7 +94,7 @@ public class ValidationServiceImpl implements ValidationService {
             case NOTE_CONTENT_UPDATE -> {
                 if (noteUpdateRequestObject.getNoteBodyObject() == null
                         || noteUpdateRequestObject.getContent() == null
-                ) throw new ValidationException(ResponseResultCode.CREATE_FAILURE_INCORRECT_FIELDS_FILLED_MESSAGE);
+                ) throw new ValidationException(ResponseResultCode.UPDATE_FAILURE_INCORRECT_FIELDS_FILLED_MESSAGE);
             }
         }
     }
