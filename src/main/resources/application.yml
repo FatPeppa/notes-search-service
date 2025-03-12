@@ -2,6 +2,8 @@ server:
   port: ${WEB-SERVER-PORT:6212}
   http2:
     enabled: false
+  undertow:
+    max-http-post-size: ${SERVER-MAX-HTTP-POST-SIZE:2MB}
 
 grpc:
   server:
