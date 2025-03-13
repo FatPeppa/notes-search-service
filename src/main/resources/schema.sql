@@ -92,13 +92,25 @@ CREATE INDEX IF NOT EXISTS "ix_tags_note_id_tag_id"
     USING btree(note_id ASC, tag_id ASC)
 ;
 
+CREATE INDEX IF NOT EXISTS "ixfk_tags_notes"
+    ON public.tags
+    USING btree(note_id ASC)
+;
+
 CREATE INDEX IF NOT EXISTS idx_note_name
     ON public.notes
-    USING btree(name);
+    USING btree(name)
+;
 
 CREATE INDEX IF NOT EXISTS idx_note_content
     ON public.notes
-    USING btree(note_content);
+    USING btree(note_content)
+;
+
+CREATE INDEX IF NOT EXISTS idx_note_user_id_name_content
+    ON public.notes
+    USING btree(user_id, name, note_content)
+;
 
 CREATE INDEX IF NOT EXISTS "ixfk_normalized_note_search_info_notes"
     ON public.normalized_note_search_info
@@ -108,6 +120,11 @@ CREATE INDEX IF NOT EXISTS "ixfk_normalized_note_search_info_notes"
 CREATE INDEX IF NOT EXISTS "ix_normalized_note_search_info_user_id_note_id"
     ON public.normalized_note_search_info
     USING btree(user_id ASC, note_id)
+;
+
+CREATE INDEX IF NOT EXISTS "ix_normalized_note_search_info_user_id_name_content"
+    ON public.normalized_note_search_info
+    USING btree(user_id ASC, normalized_name ASC, normalized_note_content ASC)
 ;
 
 CREATE INDEX IF NOT EXISTS idx_fulltext_note_name
