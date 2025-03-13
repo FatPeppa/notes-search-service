@@ -119,7 +119,7 @@ CREATE INDEX IF NOT EXISTS idx_fulltext_note_content
     USING GIN(tsvector_content)
 ;
 
-CREATE INDEX IF NOT EXISTS idx_fulltext_note_content
+CREATE INDEX IF NOT EXISTS idx_fulltext_note_name_content
     ON public.notes
     USING GIN(tsvector_name_content)
 ;
@@ -133,7 +133,7 @@ CREATE INDEX IF NOT EXISTS idx_fulltext_normalized_note_search_info_note_content
     USING GIN(tsvector_content)
 ;
 
-CREATE INDEX IF NOT EXISTS idx_fulltext_normalized_note_search_info_note_content
+CREATE INDEX IF NOT EXISTS idx_fulltext_normalized_note_search_info_note_name_content
     ON public.normalized_note_search_info
     USING GIN(tsvector_name_content)
 ;
