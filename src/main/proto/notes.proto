@@ -7,6 +7,9 @@ package notes;
 option java_package = "org.shyhigh.grpc.notes";
 option java_multiple_files = true;
 
+//TO DO: Рефакторинг кода в части замены кодов неуспешного выполнения запросов на код общей ошибки
+//    без детализации по запросам.
+// Детальное описание ошибки с её кодом добавить в тело ответа
 enum ResponseResultCode {
   CREATE_SUCCESS = 0;
   CREATE_FAILURE_UNREADABLE_MESSAGE = 1;
@@ -25,8 +28,36 @@ enum ResponseResultCode {
   SEARCH_UNREADABLE_MESSAGE = 14;
   SEARCH_NOTES_NOT_FOUND = 15;
   UNEXPECTED_ERROR = 16;
+  API_TOKEN_VALIDATION_SUCCESS = 17;
+  API_TOKEN_VALIDATION_FAILURE = 18;
+  ADMIN_REGISTER_SUCCESS = 19;
+  ADMIN_REGISTER_FAILURE_USERNAME_NOT_FREE = 20;
+  ADMIN_REGISTER_FAILURE_EMAIL_NOT_FREE = 21;
+  ADMIN_LOGIN_SUCCESS = 22;
+  ADMIN_LOGIN_FAILURE = 23;
+  ADMIN_REFRESH_ACCESS_TOKEN_SUCCESS = 24;
+  ADMIN_REFRESH_ACCESS_TOKEN_FAILURE = 25;
+  ADMIN_LOGOUT_SUCCESS = 26;
+  ADMIN_LOGOUT_FAILURE = 27;
+  VALIDATE_ACCESS_TOKEN_SUCCESS = 28;
+  VALIDATE_ACCESS_TOKEN_FAILURE = 29;
+  VALIDATE_REFRESH_TOKEN_SUCCESS = 30;
+  VALIDATE_REFRESH_TOKEN_FAILURE = 31;
+  SEARCH_USERS_SUCCESS = 32;
+  SEARCH_USERS_FAILURE_DATA_NOT_EXIST = 33;
+  BLOCK_USER_SUCCESS = 34;
+  BLOCK_USER_FAILURE_USER_NOT_EXIST = 35;
+  BLOCK_USER_FAILURE_USER_ALREADY_BLOCKED = 36;
+  BLOCK_USER_FAILURE_USER_CANNOT_BLOCK_SELF = 37;
+  BLOCK_USER_FAILURE_USER_CANNOT_BLOCK_ADMIN = 38;
+  GET_USER_BY_USER_NAME_SUCCESS = 39;
+  GET_USER_BY_USER_NAME_FAILURE = 40;
+  UNAUTHORIZED_REQUEST = 41;
+  GET_APP_CLIENT_SUCCESS = 42;
+  GET_APP_CLIENT_FAILURE = 43;
 }
 
+// Notes
 enum NoteDataUpdateType {
   NOTE_NAME_AND_CATEGORY_UPDATE = 0;
   CATEGORY_NAME_UPDATE = 1;
@@ -131,4 +162,178 @@ service NoteDataModifyingService {
 
 service NoteSearchService {
   rpc searchNotes(NoteSearchRequest) returns (NoteSearchResponse);
+}
+
+// Api Token
+message ApiToken {
+  string token = 1;
+}
+
+message ApiTokenValidationRequest {
+  ApiToken apiToken = 1;
+  string requestDate = 2;
+}
+
+message ApiTokenValidationResult {
+  ResponseResultCode response_result_code = 1;
+  string responseDate = 2;
+}
+
+message GetAppClientRequest {
+  string client_name = 1;
+}
+
+message GetAppClientResponse {
+  AppClient app_client = 1;
+  ResponseResultCode response_result_code = 2;
+}
+
+message AppClient {
+  string id = 1;
+  string name = 2;
+  string client_type_code = 3;
+  string target_usage = 4;
+  string register_date = 5;
+  int64 user_id = 6;
+}
+
+service ApiTokenService {
+  rpc validateApiToken(ApiTokenValidationRequest) returns (ApiTokenValidationResult);
+  rpc getAppClient(GetAppClientRequest) returns (GetAppClientResponse);
+}
+
+// Authentication
+message AdminRegisterRequest {
+  string email = 1;
+  string login = 2;
+  string password = 3;
+}
+
+message AdminLoginRequest {
+  oneof login {
+    string email = 1;
+    string username = 2;
+  }
+  string password = 3;
+}
+
+message RefreshTokenRequest {
+  string refresh_token = 1;
+}
+
+message AdminLogoutRequest {
+  string refresh_token = 1;
+}
+
+message AdminLogoutResponse {
+  ResponseResultCode response_result_code = 1;
+}
+
+message AuthenticationResponse {
+  ResponseResultCode response_result_code = 1;
+  google.protobuf.Int64Value user_id = 2;
+  google.protobuf.StringValue accessToken = 3;
+  google.protobuf.StringValue accessTokenExpiry = 4;
+  google.protobuf.StringValue refreshToken = 5;
+  google.protobuf.StringValue refreshTokenExpiry = 6;
+}
+
+message ValidateTokenRequest {
+  oneof token {
+    string access_token = 1;
+    string refresh_token = 2;
+  }
+}
+
+message UserDetails {
+  int64 user_id = 1;
+  repeated google.protobuf.StringValue granted_authority = 2;
+  //string password = 2;
+  string username = 3;
+}
+
+message ValidateTokenResponse {
+  ResponseResultCode response_result_code = 1;
+  UserDetails user_details = 2;
+}
+
+service GrpcAuthenticationService {
+  rpc registerAdmin(AdminRegisterRequest) returns (AuthenticationResponse);
+  rpc loginAdmin(AdminLoginRequest) returns (AuthenticationResponse);
+  rpc refreshToken(RefreshTokenRequest) returns (AuthenticationResponse);
+  rpc logoutAdmin(AdminLogoutRequest) returns (AdminLogoutResponse);
+  rpc validateAccessToken(ValidateTokenRequest) returns (ValidateTokenResponse);
+  rpc validateRefreshToken(ValidateTokenRequest) returns (ValidateTokenResponse);
+}
+
+// User interaction
+enum SearchUsersDateFilterType {
+  BY_REGISTER_DATE = 0;
+  BY_LAST_LOGON_DATE = 1;
+}
+
+enum SearchUsersDetailType {
+  SIMPLE = 0;
+  WITH_OBJECTS_AMOUNT = 1;
+}
+
+message User {
+  int64 user_id = 1;
+  string username = 2;
+  string email = 3;
+  string role = 4;
+  string register_date = 5;
+  string last_logon_date = 6;
+  bool blocked = 7;
+  string client_id = 8;
+  ExtraUserDetails extra_user_details = 9;
+}
+
+message ExtraUserDetails {
+  int32 notes_amount = 1;
+  int32 categories_amount = 2;
+  int32 tags_amount = 3;
+}
+
+message SearchUsersRequest {
+  google.protobuf.Int64Value user_id = 1;
+  google.protobuf.StringValue username = 2;
+  google.protobuf.StringValue role = 3;
+  google.protobuf.BoolValue blocked = 4;
+  google.protobuf.StringValue client_id = 5;
+  google.protobuf.StringValue begin_date = 6;
+  google.protobuf.StringValue end_date = 7;
+  SearchUsersDateFilterType date_filter_type = 8;
+  SearchUsersDetailType detail_type = 9;
+  google.protobuf.StringValue email = 10;
+  string access_token = 11;
+}
+
+message SearchUsersResponse {
+  ResponseResultCode response_result_code = 1;
+  repeated User users = 2;
+}
+
+message BlockUserRequest {
+  int64 user_id = 1;
+  string access_token = 2;
+}
+
+message BlockUserResponse {
+  ResponseResultCode response_result_code = 1;
+}
+
+message GetUserDetailsByUsernameRequest {
+  string username = 1;
+}
+
+message GetUserDetailsByUsernameResponse {
+  ResponseResultCode response_result_code = 1;
+  UserDetails user_details = 2;
+}
+
+service GrpcUserService {
+  rpc searchUsers(SearchUsersRequest) returns (SearchUsersResponse);
+  rpc blockUser(BlockUserRequest) returns (BlockUserResponse);
+  rpc getUserDetailsByUsername(GetUserDetailsByUsernameRequest) returns (GetUserDetailsByUsernameResponse);
 }

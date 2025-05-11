@@ -30,7 +30,7 @@ spring:
     initialization-mode: always
   sql:
     init:
-      mode: ${DB-INIT-MODE:never} # Режим автоматического запуска DDL-скрипта БД. Возможные значения: always, never, embedded
+      mode: ${DB-INIT-MODE:never} #Режим автоматического запуска DDL-скрипта БД. Возможные значения: always, never, embedded
       continue-on-error: false
       encoding: UTF-8
 
